@@ -11,60 +11,157 @@ In the project directory, you can run:
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+WordHistogram
+The WordHistogram is a React component that fetches text data from an API endpoint, generates a histogram of the word frequencies, and displays it using Chart.js. The histogram shows the top 20 most frequent words in the fetched text data.
 
-### `npm test`
+Getting Started
+To use the WordHistogram component, follow these steps:
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+Clone the repository or copy the WordHistogram component code into your React project.
 
-### `npm run build`
+Install the required dependencies by running the following command:
+npm install chart.js
+3.Import the WordHistogram component into your React application.
+import WordHistogram from './WordHistogram';
+4.Add the WordHistogram component to your React component hierarchy.
+```
+import './App.css';
+import WordHistogram from './histogram';
+function App() {
+  return (
+    <div className="App">
+      <WordHistogram />
+    </div>
+  );
+}
+export default App;
+```
+5.Customize the WordHistogram component as needed, such as modifying the button styles or chart options.
+6.Start your React application and view the WordHistogram component in your browser.
+npm start
+Functionality
+The WordHistogram component provides the following functionality:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+Fetching Text Data: When the "Submit" button is clicked, the component fetches text data from the specified API endpoint (https://www.terriblytinytales.com/test.txt).
+```
+const fetchData = async () => {
+    const response = await fetch("https://www.terriblytinytales.com/test.txt");
+    const textData = await response.text();
+    const words = textData.match(/\b\w+\b/g);
+    const frequency = {};
+    words.forEach((word) => {
+      const lowercaseWord = word.toLowerCase();
+      if (frequency[lowercaseWord]) {
+        frequency[lowercaseWord]++;
+      } else {
+        frequency[lowercaseWord] = 1;
+      }
+    });
+```
+Word Frequency Calculation: The fetched text data is processed to calculate the frequency of each word using regular expressions. The frequencies are then sorted in descending order.
+```
+const sortedFrequency = Object.entries(frequency).sort((a, b) => b[1] - a[1]);
+```
+Histogram Generation: The top 20 most frequent words and their frequencies are used to generate a bar chart using Chart.js. The chart is displayed in the component once it's visible.
+```
+const top20Words = sortedFrequency.slice(0, 20);
+    setHistogramData(top20Words);
+    setIsChartVisible(true);
+ ```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+Exporting Data: After the chart is visible, you can click the "Export" button to export the histogram data as a CSV file. The data is downloaded with the filename "histogram.csv".
+```
+const exportData = () => {
+    const csv = histogramData.map((word) => word.join(",")).join("\n");
+    const a = document.createElement("a");
+    const file = new Blob([csv], { type: "text/csv" });
+    a.href = URL.createObjectURL(file);
+    a.download = "histogram.csv";
+    a.click();
+  };
+  ```
+Dependencies
+The WordHistogram component depends on the following libraries:
+React: A JavaScript library for building user interfaces.
+Chart.js: A charting library that provides an easy way to visualize data using various chart types.
+```
+import React, { useState, useEffect, useRef } from "react";
+import { Chart, registerables } from "chart.js";
+import "./WordHistogram.css";
+```
+File Structure
+The WordHistogram component consists of the following files:
+WordHistogram.js: The main component file that contains the WordHistogram component code.
+```
+const generateChart = () => {
+    const labels = histogramData.map((word) => word[0]);
+    const values = histogramData.map((word) => word[1]);
+    const ctx = document.getElementById("myChart");
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+    if (chartRef.current) {
+      chartRef.current.destroy();
+    }
 
-### `npm run eject`
+    chartRef.current = new Chart(ctx, {
+      type: "bar",
+      data: {
+        labels,
+        datasets: [
+          {
+            label: "Word Frequency",
+            data: values,
+            backgroundColor: "purple",
+            borderColor: "rgba(255, 99, 132, 1)",
+            borderWidth: 1,
+          },
+        ],
+      },
+      options: {
+        scales: {
+          y: {
+            beginAtZero: true,
+          },
+        },
+        animation: {
+          duration: 1000,
+        },
+      },
+    });
+  };
+  ```
+WordHistogram.css: The CSS file that provides styles for the WordHistogram component.
+```
+.chart-canvas {
+  margin-top: 20px;
+}
+.fetch-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: navy;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+.title {
+  font-size: 30px;
+}
+.export-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: olivedrab;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+}
+```
+Customization
+You can customize the WordHistogram component by modifying the CSS styles in the WordHistogram.css file. Additionally, you can adjust the chart options and appearance by modifying the generateChart function in the component code.
+Contributing
+Contributions to the WordHistogram component are welcome! If you find any issues or have suggestions for improvement, please open an issue or submit a pull request to the GitHub repository.
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
-
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
-
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
-
-## Learn More
-
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
-
-To learn React, check out the [React documentation](https://reactjs.org/).
-
-### Code Splitting
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
