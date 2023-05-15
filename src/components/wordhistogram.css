@@ -1,0 +1,28 @@
+.chart-canvas {
+  margin-top: 20px;
+}
+.fetch-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: navy;
+  color: white;
+  border: none;
+  border-radius: 15px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.title {
+  font-size: 30px;
+}
+.export-button {
+  padding: 10px 20px;
+  font-size: 16px;
+  background-color: olivedrab;
+  color: white;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  margin-top: 10px;
+}
